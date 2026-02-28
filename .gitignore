@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+.astro/
+dist/
+
+# Security (AWS Keys)
+*.csv
+.env*
+terraform/.terraform/
+*.tfstate*
+
+# OS files
+.DS_Store
+.yes/

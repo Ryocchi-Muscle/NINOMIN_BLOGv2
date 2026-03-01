@@ -1,62 +1,68 @@
-# Astro Starter Kit: Blog
+# NINOMIN_BLOGv2
+
+Astro製の個人ブログ。フロントエンドのビルドからAWSインフラの構築まで、全てコードで管理している。
+
+## アーキテクチャ
+
+```
+Astro (SSG)
+    ↓ pnpm build
+S3 Bucket  ←  OAC (Origin Access Control)
+    ↓
+CloudFront (CDN / HTTPS強制)
+    ↓
+CloudWatch Logs (7日保持 / FinOps)
+```
+
+静的サイトをS3にホスティングし、CloudFrontをCDNとして配信する構成。S3への直接アクセスはOACで制限し、CloudFront経由のみに絞っている。
+
+## IaC (Terraform)
+
+インフラはすべてTerraformで管理。
+
+```
+terraform/
+└── main.tf   # S3 / CloudFront / OAC / CloudWatch Logs
+```
+
+| リソース | 用途 |
+| :--- | :--- |
+| `aws_s3_bucket` | 静的ファイルのホスティング |
+| `aws_cloudfront_origin_access_control` | S3への直接アクセスを遮断 |
+| `aws_cloudfront_distribution` | CDN・HTTPS強制 |
+| `aws_s3_bucket_policy` | OAC統合のバケットポリシー |
+| `aws_cloudwatch_log_group` | デプロイログ（7日保持でコスト最適化） |
 
 ```sh
-pnpm create astro@latest -- --template blog
+cd terraform
+terraform init
+terraform plan
+terraform apply
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## フロントエンド
 
-Features:
+- [Astro](https://astro.build/) v5 (SSG)
+- MDX / Markdown
+- RSS Feed / Sitemap
 
-- ✅ Minimal styling (make it your own!)
-- ✅ 100/100 Lighthouse performance
-- ✅ SEO-friendly with canonical URLs and OpenGraph data
-- ✅ Sitemap support
-- ✅ RSS Feed support
-- ✅ Markdown & MDX support
+## セットアップ
 
-## 🚀 Project Structure
+```sh
+pnpm install
+pnpm dev      # 開発サーバー (localhost:4321)
+pnpm build    # ./dist/ にビルド
+```
 
-Inside of your Astro project, you'll see the following folders and files:
+## ディレクトリ構成
 
-```text
-├── public/
+```
 ├── src/
-│   ├── components/
-│   ├── content/
-│   ├── layouts/
-│   └── pages/
-├── astro.config.mjs
-├── README.md
-├── package.json
-└── tsconfig.json
+│   ├── components/
+│   ├── content/
+│   │   └── blog/     # ブログ記事 (Markdown / MDX)
+│   ├── layouts/
+│   └── pages/
+└── terraform/
+    └── main.tf       # AWSインフラ定義
 ```
-
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
-
-## Credit
-
-This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).

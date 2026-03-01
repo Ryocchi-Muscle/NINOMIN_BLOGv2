@@ -98,5 +98,5 @@ resource "aws_cloudwatch_log_group" "app_logs" {
   retention_in_days = 7 # FinOps: Minimize storage cost based on past incidents
 }
 output "cloudfront_distribution_id" {
-  value = aws_cloudfront_distribution.static_site.id ß
+  value = aws_cloudfront_distribution.static_site.id
 }
